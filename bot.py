@@ -110,12 +110,12 @@ async def command_bot(update, context, language=None, prompt=translator_prompt, 
             and update_message.from_user.is_bot == False \
             and (update_message.reply_to_message.from_user.username == bot_info.username or message_has_nick):
                 if update_message.reply_to_message.from_user.is_bot and Users.get_config(convo_id, "TITLE") == True:
-                    message = '\n'.join(reply_to_message_text.split('\n')[1:]) + "\n" + message
+                    message = message + "\n" + '\n'.join(reply_to_message_text.split('\n')[1:])
                 else:
                     if reply_to_message_text:
-                        message = reply_to_message_text + "\n" + message
+                        message = message + "\n" + reply_to_message_text
                     if reply_to_message_file_content:
-                        message = reply_to_message_file_content + "\n" + message
+                        message = message + "\n" + reply_to_message_file_content
             elif update_message.reply_to_message and update_message.reply_to_message.from_user.is_bot \
             and update_message.reply_to_message.from_user.username != bot_info.username:
                 return
@@ -637,6 +637,8 @@ async def info(update, context):
     await delete_message(update, context, [message.message_id, user_message_id])
 
 @decorators.PrintMessage
+@decorators.GroupAuthorization
+@decorators.Authorization
 async def start(update, context): # 当用户输入/start时，返回文本
     _, _, _, _, _, _, _, _, convo_id, _, _, _ = await GetMesageInfo(update, context)
     user = update.effective_user
